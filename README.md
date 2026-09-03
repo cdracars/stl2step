@@ -289,6 +289,12 @@ No bindings required — spawn the CLI as a subprocess and read the final `RESUL
 line (or pass `--quiet` so it's the only stdout line). Python, Node, Go, Rust,
 C#, shell — all work the same way. Recipes are in **[AGENTS.md](AGENTS.md)**.
 
+### Integration prototypes
+
+- [`integrations/freecad`](integrations/freecad) — experimental FreeCAD
+  workbench that converts a selected mesh or STL file and imports the generated
+  STEP into the active document.
+
 ---
 
 ## The RESULT contract
