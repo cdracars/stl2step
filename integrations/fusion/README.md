@@ -1,13 +1,35 @@
 # Fusion add-in prototype
 
-This is intentionally a small, throwaway integration prototype. It answers one
-question:
+This is a Fusion 360 add-in that answers one question:
 
-> Can a Fusion toolbar command run `stl2step` outside Fusion and safely import
-> the resulting STEP body back into the active design?
+> Can a user select an STL, convert it outside Fusion, and open the resulting
+> STEP B-Rep in a new Fusion document?
 
-The prototype converts an STL selected from disk. It does not yet convert an
-already-imported Fusion mesh body or bundle release binaries.
+The add-in converts an STL selected from disk. It does not modify the currently
+open Fusion document or convert an already-imported Fusion mesh body.
+
+## Install for another user (Windows)
+
+1. Copy the complete `Stl2StepFusion` folder to:
+
+   `%APPDATA%\Autodesk\Autodesk Fusion 360\API\AddIns`
+
+   The folder must contain `Stl2StepFusion.py`, `Stl2StepFusion.manifest`,
+   `engine.py`, and `bin\windows-x86_64\stl2step.exe` with its DLLs.
+
+2. Start or restart Fusion 360.
+
+3. Open **Utilities → Scripts and Add-Ins → Add-Ins**, select
+   **Stl2StepFusion**, and verify that **Run on Startup** is checked and **Run**
+   is on. If it is not listed, use **+ → My Add-Ins** and select the folder
+   containing the manifest (not the `.py` file).
+
+4. In the **UTILITIES** tab, choose **STL to STEP Solid**. Select an STL, choose
+   its units, and choose **TrueForm** or **Verbatim**. The result opens as a new
+   Fusion document; the current document is not changed.
+
+The packaged Windows folder is self-contained: the OCCT DLLs sit beside the
+CLI, so the recipient does not need OpenCASCADE, Python, or a PATH change.
 
 ## Install for development
 
@@ -60,11 +82,13 @@ control.
 
 - Prompts for an STL file.
 - Prompts whether the unitless STL coordinates represent millimetres or inches.
-- Runs TrueForm with `--quiet --no-verify --engine trueform` on a worker thread.
+- Prompts for TrueForm or Verbatim conversion mode.
+- Runs the selected mode with `--quiet --no-verify` on a worker thread.
 - Treats converter exit codes 0 and 2 as a produced STEP file.
 - Imports the STEP only after the Fusion command has ended, using a custom event
   on Fusion's main thread.
-- Shows the key `RESULT` statistics and warnings after import.
+- Shows a progress dialog while converting, then key `RESULT` statistics and
+  warnings after import.
 - Removes the temporary conversion directory after a successful import.
 
 The imported STEP is direct B-Rep geometry. This does not reconstruct Fusion
