@@ -19,6 +19,9 @@ class EngineError(RuntimeError):
     """The converter could not be located or did not produce a usable result."""
 
 
+CONVERSION_TIMEOUT_SECONDS = 3600
+
+
 def _bundled_relative_path() -> Path | None:
     machine = platform.machine().lower()
 
@@ -76,9 +79,12 @@ def convert(
     output_step: Path,
     *,
     units: str,
+    mode: str = "trueform",
 ) -> dict[str, Any]:
     if units not in {"mm", "in"}:
         raise ValueError(f"unsupported STL units: {units}")
+    if mode not in {"trueform", "verbatim"}:
+        raise ValueError(f"unsupported conversion mode: {mode}")
 
     command = [
         str(executable),
@@ -88,7 +94,7 @@ def convert(
         "--quiet",
         "--no-verify",
         "--engine",
-        "trueform",
+        mode,
         "--units",
         units,
     ]
@@ -97,6 +103,12 @@ def convert(
         capture_output=True,
         text=True,
         check=False,
+        timeout=CONVERSION_TIMEOUT_SECONDS,
+        # Fusion is a GUI process. Without this flag, Windows opens a blank
+        # console window for the console-subsystem converter and makes a
+        # completed conversion look like a hung add-in.
+        creationflags=(getattr(subprocess, "CREATE_NO_WINDOW", 0)
+                       if os.name == "nt" else 0),
     )
 
     try:

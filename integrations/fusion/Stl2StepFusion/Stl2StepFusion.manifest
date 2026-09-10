@@ -6,8 +6,8 @@
   "description": {
     "": "Prototype: convert an STL to a STEP B-Rep solid with stl2step and import it into Fusion."
   },
-  "version": "0.1.0-prototype",
-  "runOnStartup": false,
+  "version": "0.1.1-prototype",
+  "runOnStartup": true,
   "supportedOS": "windows|mac",
   "editEnabled": true
 }
